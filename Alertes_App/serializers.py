@@ -22,10 +22,46 @@ class AlertSerializer(serializers.ModelSerializer):
     # Affiche le nom de la caméra et le nom de l'agent, pas seulement leurs IDs
     camera = serializers.StringRelatedField()
     taken_by = serializers.StringRelatedField()
-
     class Meta:
         model = Alert
-        fields = ['id', 'camera', 'taken_by', 'pourc_ai', 'description_ai', 'severity', 'status', 'timestamp', 'video_url']
+        fields = [
+            'id',
+            'status',
+            'severity',
+            'timestamp',
+            'description_ai',
+            'pourc_ai',
+            'video_url',
+            'camera', # ID de la caméra
+            'taken_by', # ID de l'AgentUser
+        ]
+
+class AlertDetailSerializer(serializers.ModelSerializer):
+    # On récupère le nom de la caméra via la relation ForeignKey
+    camera_name = serializers.CharField(source='camera.name', read_only=True)
+    camera_location = serializers.CharField(source='camera.location', read_only=True)
+
+    # On va chercher le nom de l'utilisateur via la double relation : Alert -> AgentUser -> User
+    taken_by_username = serializers.CharField(source='taken_by.user.username', read_only=True, allow_null=True)
+    user_matricule = serializers.CharField(source='taken_by.matricule', read_only=True, allow_null=True)
+    user_Role = serializers.CharField(source='taken_by.role', read_only=True, allow_null=True)
+    
+    class Meta:
+        model = Alert
+        fields = [
+            'id',
+            'status',
+            'severity',
+            'timestamp',
+            'description_ai',
+            'pourc_ai',
+            'video_url',
+            'camera_name', # Nom de la caméra
+            'camera_location', # Emplacement de la caméra
+            'taken_by_username', # Nom de l'utilisateur qui a pris l'alerte
+            'user_matricule', # Matricule de l'agent
+            'user_Role', # Rôle de l'agent
+        ]
 
 class RapportSerializer(serializers.ModelSerializer):
     alert = serializers.StringRelatedField()

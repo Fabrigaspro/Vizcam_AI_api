@@ -15,7 +15,7 @@ class CameraAdmin(admin.ModelAdmin):
 class AlertAdmin(admin.ModelAdmin):
     list_display = ('camera', 'taken_by', 'pourc_ai', 'description_ai', 'severity', 'status', 'timestamp', 'video_url')
     list_filter = ('status', 'severity', 'camera')
-    search_fields = ('camera__name', 'status')
+    search_fields = ('status', 'pourc_ai')
     ordering = ('-timestamp',)
     date_hierarchy = 'timestamp'
 

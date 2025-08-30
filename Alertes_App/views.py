@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import AgentUser, Camera, Alert, Rapport, Notification, Compte
 from .serializers import (
     AgentUserSerializer, CameraSerializer,
-    AlertSerializer, RapportSerializer, NotificationSerializer,
-    CompteSerializer
+    AlertSerializer,AlertDetailSerializer, RapportSerializer, NotificationSerializer,
+    CompteSerializer,
 )
 
 # IsAuthenticated garantit que seuls les utilisateurs connectés peuvent accéder à ces données
@@ -42,6 +42,16 @@ class AlertViewSet(viewsets.ModelViewSet):
         alert.status = 'closed'
         alert.save()
         return Response({'status': 'alert cloturée !'})
+   
+class DetailAlertesViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Vue en lecture seule pour récupérer la liste complète des alertes
+    avec les détails de la caméra et de l'agent.
+    """
+    serializer_class = AlertDetailSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Alert.objects.select_related('camera', 'taken_by__user').order_by('-timestamp')
+    
 
 class RapportViewSet(viewsets.ModelViewSet):
     queryset = Rapport.objects.all()
